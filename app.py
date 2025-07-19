@@ -26,7 +26,8 @@ agent = BigQueryAgent(
     service_account_path=None,
     project_id=PROJECT_ID,
     gemini_api_key=os.environ["GOOGLE_API_KEY"],
-    dataset_id=DATASET_ID
+    dataset_id=DATASET_ID,
+    credentials=credentials  # ← Now passed correctly
 )
 agent.bq.client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 
