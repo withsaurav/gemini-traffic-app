@@ -56,7 +56,7 @@ class BigQueryAgent:
         self.project_id = project_id
         self.schema_info = self.bq.get_schema_info(dataset_id)
 
-        def query_bigquery(sql: str) -> str:
+    def query_bigquery(sql: str) -> str:
             return self.bq.run(sql)
 
         self.tool = Tool(
@@ -90,7 +90,7 @@ IMPORTANT SQL RULES:
             max_iterations=2
         )
 
-     def ask(self, question: str) -> str:
+    def ask(self, question: str) -> str:
         try:
             enhanced_question = f"""
 You are a data analyst assistant working with BigQuery.
@@ -114,6 +114,6 @@ Follow these SQL rules:
             return f"Error: {str(e)}"
 
 
- def run_sql_directly(self, sql: str) -> str:
+    def run_sql_directly(self, sql: str) -> str:
         return self.bq.run(sql)
 
