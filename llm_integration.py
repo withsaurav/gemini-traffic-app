@@ -1,7 +1,6 @@
 import os
 import json
 from typing import Optional
-
 from langchain.agents import Tool, AgentType, initialize_agent
 from langchain_community.utilities.sql_database import SQLDatabase
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -56,7 +55,7 @@ class BigQueryAgent:
         self.project_id = project_id
         self.schema_info = self.bq.get_schema_info(dataset_id)
 
-    def query_bigquery(sql: str) -> str:
+        def query_bigquery(sql: str) -> str:
             return self.bq.run(sql)
 
         self.tool = Tool(
@@ -67,7 +66,7 @@ Available schema:
 {self.schema_info}
 
 IMPORTANT SQL RULES:
-1. Always use backticks around table names: \`{project_id}.{dataset_id}.table_name\`
+1. Always use backticks around table names: `{project_id}.{dataset_id}.table_name`
 2. Use LIMIT to avoid large result sets (max 1000 rows)
 3. For date operations, use PARSE_DATE or SAFE_CAST functions
 4. Write clean, valid BigQuery SQL syntax
@@ -113,7 +112,5 @@ Follow these SQL rules:
         except Exception as e:
             return f"Error: {str(e)}"
 
-
     def run_sql_directly(self, sql: str) -> str:
         return self.bq.run(sql)
-
