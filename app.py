@@ -1,7 +1,16 @@
 import streamlit as st
 import os
 import json
+
+import os
+import sys
+
+# Ensure the current directory (where llm_integration.py is) is in Python path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from llm_integration import BigQueryAgent
+
+
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
