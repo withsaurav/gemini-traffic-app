@@ -64,7 +64,14 @@ class BigQueryAgent:
             func=query_bigquery,
             description=f"""Query BigQuery dataset `{project_id}.{dataset_id}`.
 Available schema:
-{self.schema_info}"""
+{self.schema_info}
+
+IMPORTANT SQL RULES:
+1. Always use backticks around table names: \`{project_id}.{dataset_id}.table_name\`
+2. Use LIMIT to avoid large result sets (max 1000 rows)
+3. For date operations, use PARSE_DATE or SAFE_CAST functions
+4. Write clean, valid BigQuery SQL syntax
+"""
         )
 
         self.llm = ChatGoogleGenerativeAI(
@@ -83,8 +90,30 @@ Available schema:
             max_iterations=2
         )
 
-    def ask(self, question: str) -> str:
+     def ask(self, question: str) -> str:
         try:
-            return self.agent.run(question)
+            enhanced_question = f"""
+You are a data analyst assistant working with BigQuery.
+
+Dataset location: `{self.project_id}.{self.dataset_id}`
+
+Available tables and schema:
+{self.schema_info}
+
+Please answer the following question by writing a valid BigQuery SQL query:
+{question}
+
+Follow these SQL rules:
+1. Always use backticks around full table names like `project.dataset.table`.
+2. Use LIMIT in large queries.
+3. Handle string/date fields properly.
+4. If unsure about the question, assume user refers to the only available table.
+"""
+            return self.agent.run(enhanced_question)
         except Exception as e:
             return f"Error: {str(e)}"
+
+
+ def run_sql_directly(self, sql: str) -> str:
+        return self.bq.run(sql)
+
