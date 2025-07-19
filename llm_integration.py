@@ -7,9 +7,14 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import Tool, initialize_agent, AgentType
 
 class BigQueryWrapper:
-    def __init__(self, service_account_path: str, project_id: str):
-        credentials = service_account.Credentials.from_service_account_file(service_account_path)
-        self.client = bigquery.Client(credentials=credentials, project=project_id)
+     def __init__(self, project_id: str, service_account_path: str = None, credentials=None):
+         if credentials:
+            self.client = bigquery.Client(credentials=credentials, project=project_id)
+        elif service_account_path:
+            creds = service_account.Credentials.from_service_account_file(service_account_path)
+            self.client = bigquery.Client(credentials=creds, project=project_id)
+        else:
+            raise ValueError("Either credentials or service_account_path must be provided")
         self.project_id = project_id
 
     def clean_sql_query(self, sql: str) -> str:
@@ -41,9 +46,11 @@ class BigQueryWrapper:
 
 
 class BigQueryAgent:
-    def __init__(self, service_account_path: str, project_id: str, gemini_api_key: str, dataset_id: str):
+    def __init__(self, service_account_path: str, project_id: str, gemini_api_key: str, dataset_id: str, credentials=None):
+    #def __init__(self, service_account_path: str, project_id: str, gemini_api_key: str, dataset_id: str):
         os.environ["GOOGLE_API_KEY"] = gemini_api_key
-        self.bq = BigQueryWrapper(service_account_path, project_id)
+        self.bq = BigQueryWrapper(project_id=project_id, credentials=credentials)
+        #self.bq = BigQueryWrapper(service_account_path, project_id)
         self.dataset_id = dataset_id
         self.project_id = project_id
         self.schema_info = self.bq.get_schema_info(dataset_id)
