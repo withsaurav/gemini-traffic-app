@@ -27,17 +27,18 @@ class BigQueryWrapper:
             return "No results found."
         return df.to_string(index=False, max_rows=50)
 
-   def get_schema_info(self, dataset_id: str) -> str:
-    schema_info = ""
-    dataset_ref = self.client.dataset(dataset_id)
-    tables = list(self.client.list_tables(dataset_ref))
-    for table in tables:
-        table_ref = dataset_ref.table(table.table_id)
-        schema = self.client.get_table(table_ref).schema
-        schema_info += f"{table.table_id}:\n"
-        for field in schema:
-            schema_info += f"  - {field.name} ({field.field_type})\n"
-    return schema_info.strip()
+    def get_schema_info(self, dataset_id: str) -> str:
+        schema_info = ""
+        dataset_ref = self.client.dataset(dataset_id)
+        tables = list(self.client.list_tables(dataset_ref))
+        for table in tables:
+            table_ref = dataset_ref.table(table.table_id)
+            schema = self.client.get_table(table_ref).schema
+            schema_info += f"{table.table_id}:\n"
+            for field in schema:
+                schema_info += f"  - {field.name} ({field.field_type})\n"
+        return schema_info.strip()
+
 
 class BigQueryAgent:
     def __init__(self, service_account_path: str, project_id: str, gemini_api_key: str, dataset_id: str):
@@ -47,17 +48,20 @@ class BigQueryAgent:
         self.project_id = project_id
         self.schema_info = self.bq.get_schema_info(dataset_id)
 
+        # Function to query BigQuery
         def query_bigquery(sql: str) -> str:
             return self.bq.run(sql)
 
+        # Tool definition for LangChain agent
         self.tool = Tool(
             name="BigQuery_SQL",
             func=query_bigquery,
-            description=f"Query BigQuery dataset `{project_id}.{dataset_id}`.
-                        Available schema:
-                        {self.schema_info}"
+            description=f"""Query BigQuery dataset `{project_id}.{dataset_id}`.
+            Available schema:
+            {self.schema_info}"""
         )
 
+        # LLM configuration
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
             temperature=0.1,
@@ -65,6 +69,7 @@ class BigQueryAgent:
             google_api_key=gemini_api_key
         )
 
+         # LangChain agent setup
         self.agent = initialize_agent(
             tools=[self.tool],
             llm=self.llm,
