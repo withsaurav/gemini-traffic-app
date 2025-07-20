@@ -39,5 +39,12 @@ question = st.text_input("🔍 Ask a question about traffic data:")
 if st.button("Ask Question") and question:
     with st.spinner("Thinking..."):
         response = agent.ask(question)
-        st.markdown("### ✅ Response")
-        st.text(response)
+
+         # If response is a DataFrame, show it
+        if isinstance(result, pd.DataFrame):
+            st.markdown("### ✅ Query Result")
+            st.dataframe(result)
+        else:
+            st.markdown("### ✅ Response")
+            st.text(result)
+       
