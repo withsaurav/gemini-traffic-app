@@ -117,15 +117,17 @@ class BigQueryAgent:
         self.tool = Tool(
             name="BigQuery_SQL",
             func=query_bigquery,
-            description = 
+            description=(
                 f"Execute SQL queries on BigQuery dataset `{self.project_id}.{self.dataset_id}`.\n\n"
                 f"📘 Available schema:\n{self.schema_info}\n\n"
                 f"💡 SQL Guidelines:\n"
                 f"- Use backticks around table names\n"
                 f"- Always use LIMIT to avoid large results\n"
                 f"- Handle date/time fields with SAFE_CAST or PARSE_DATE\n"
+                f"- Use LOWER(column_name) for case-insensitive string filtering, e.g., `WHERE LOWER(color) = 'silver'`\n"
                 f"- Write clean, valid BigQuery SQL syntax\n"
             )
+        )
 
         # Initialize Gemini model
         self.llm = ChatGoogleGenerativeAI(
