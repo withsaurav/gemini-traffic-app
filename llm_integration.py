@@ -164,9 +164,12 @@ class BigQueryAgent:
                 f"{self.schema_info}\n\n"
                 f"💡 **Guidelines for Writing SQL Queries:**\n"
                 f"- Always enclose table names in backticks (e.g., `License_Plate.Traffic_data`)\n"
+                f"- Always use LIMIT to avoid large results\n"
                 f"- Use SELECT statements to retrieve data\n"
+                f"- Handle date/time fields with SAFE_CAST or PARSE_DATE\n"
                 f"- Use WHERE clauses for filtering (e.g., WHERE car_color = 'Silver')\n"
                 f"- Use LIMIT to reduce large result sizes (e.g., LIMIT 10)\n"
+                f"- Use LOWER(column_name) for case-insensitive string filtering, e.g., `WHERE LOWER(color) = 'silver'`\n"
                 f"- Use SAFE_CAST or PARSE_DATE to handle date/time fields\n"
                 f"- Return meaningful fields such as license_plate_number, timestamp, car_color, etc.\n"
                 f"- Do NOT attempt to alter or delete any records\n"
@@ -174,6 +177,7 @@ class BigQueryAgent:
             )
         )
 
+           
 
     
 
