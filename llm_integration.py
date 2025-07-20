@@ -171,7 +171,14 @@ class BigQueryAgent:
     3. Handle string/date fields properly.
     4. If unsure about the question, assume user refers to the only available table.
     """
-                return self.agent.run(enhanced_question)
+                #return self.agent.run(enhanced_question)
+                response = self.agent.run(enhanced_question)
+
+                # Attempt to parse output if it's SQL with tabular results
+                if isinstance(response, str) and response.strip().lower().startswith("select"):
+                    return self.bq.run(response)
+                return response
+                
             except Exception as e:
                 return f"Error: {str(e)}"
         
