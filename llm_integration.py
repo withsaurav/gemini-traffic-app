@@ -1,6 +1,7 @@
 import os
 import json
-from typing import Optional
+
+from typing import Optional, Union
 from langchain.agents import Tool, AgentType, initialize_agent
 from langchain_community.utilities.sql_database import SQLDatabase
 from langchain_google_genai import ChatGoogleGenerativeAI
