@@ -213,8 +213,9 @@ class BigQueryAgent:
                
                # Check if the agent returned a SQL query string
                 if response.strip().lower().startswith("select"):
-                    df = self.bq.run(response)
-                    return df  # Return actual query result
+                    return self.bq.run(response, return_df=True)
+                    #df = self.bq.run(response)
+                    #return df  # Return actual query result
                 return response
                 
             except Exception as e:
