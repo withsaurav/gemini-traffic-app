@@ -41,10 +41,10 @@ if st.button("Ask Question") and question:
         response = agent.ask(question)
 
          # If response is a DataFrame, show it
-        if isinstance(result, pd.DataFrame):
+        if isinstance(response, pd.DataFrame):
             st.markdown("### ✅ Query Result")
-            st.dataframe(result)
+            st.dataframe(response)
         else:
             st.markdown("### ✅ Response")
-            st.text(result)
+            st.text(response)
        
