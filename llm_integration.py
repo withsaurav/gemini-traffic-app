@@ -150,20 +150,30 @@ class BigQueryAgent:
 
         # Initialize LangChain tool
         #self.tool = self._create_tool()
+
+        from langchain.agents import Tool
+
         self.tool = Tool(
             name="BigQuery_SQL",
             func=query_bigquery,
             description=(
-                f"Execute SQL queries on BigQuery dataset `{self.project_id}.{self.dataset_id}`.\n\n"
-                f"📘 Available schema:\n{self.schema_info}\n\n"
-                f"💡 SQL Guidelines:\n"
-                f"- Use backticks around table names\n"
-                f"- Always use LIMIT to avoid large results\n"
-                f"- Handle date/time fields with SAFE_CAST or PARSE_DATE\n"
-                f"- Use LOWER(column_name) for case-insensitive string filtering, e.g., `WHERE LOWER(color) = 'silver'`\n"
-                f"- Write clean, valid BigQuery SQL syntax\n"
+                f"Use this tool to query the BigQuery dataset `{self.project_id}.{self.dataset_id}`.\n\n"
+                f"📚 **Available Schema:**\n"
+                f"{self.schema_info}\n\n"
+                f"💡 **Guidelines for Writing SQL Queries:**\n"
+                f"- Always enclose table names in backticks (e.g., `License_Plate.Traffic_data`)\n"
+                f"- Use SELECT statements to retrieve data\n"
+                f"- Use WHERE clauses for filtering (e.g., WHERE car_color = 'Silver')\n"
+                f"- Use LIMIT to reduce large result sizes (e.g., LIMIT 10)\n"
+                f"- Use SAFE_CAST or PARSE_DATE to handle date/time fields\n"
+                f"- Return meaningful fields such as license_plate_number, timestamp, car_color, etc.\n"
+                f"- Do NOT attempt to alter or delete any records\n"
+                f"- Write clean and syntactically correct BigQuery SQL\n"
             )
         )
+
+
+    
 
         # Initialize Gemini model
         self.llm = ChatGoogleGenerativeAI(
