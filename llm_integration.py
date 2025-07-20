@@ -62,38 +62,74 @@ class BigQueryWrapper:
         except Exception as e:
             return f"Error getting schema: {str(e)}"
 
-    def run(self, sql: str) -> str:
-        """Execute SQL query and return results as string"""
+  #  def run(self, sql: str) -> str:
+  #      """Execute SQL query and return results as string"""
+  #      try:
+  #          # Clean the SQL query
+  #          cleaned_sql = self.clean_sql_query(sql)
+            
+  #          print(f"Executing SQL: {cleaned_sql}")  # Debug print
+            
+  #          query_job = self.client.query(cleaned_sql)
+  #          results = query_job.result()
+
+  #          # Convert to pandas DataFrame for better formatting
+  #          df = results.to_dataframe()
+
+  #          if df.empty:
+  #              return "No results found."
+
+            # Return formatted results
+  #          result_str = f"Query returned {len(df)} rows:\n\n"
+  #          result_str += df.to_string(index=False, max_rows=50)
+
+            # Add summary statistics for numeric columns
+  #          numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
+  #          if len(numeric_cols) > 0:
+  #              result_str += "\n\nSummary Statistics:\n"
+  #              for col in numeric_cols:
+  #                  result_str += f"{col}: min={df[col].min()}, max={df[col].max()}, avg={df[col].mean():.2f}\n"
+
+  #          return result_str
+
+  #      except Exception as e:
+  #          return f"Error executing query: {str(e)}\nSQL attempted: {sql}"
+
+
+
+    def run(self, sql: str, return_df: bool = False) -> Union[str, pd.DataFrame]:
+        """Execute SQL query and return results as string or DataFrame"""
         try:
             # Clean the SQL query
             cleaned_sql = self.clean_sql_query(sql)
-            
+    
             print(f"Executing SQL: {cleaned_sql}")  # Debug print
-            
+    
             query_job = self.client.query(cleaned_sql)
-            results = query_job.result()
-
-            # Convert to pandas DataFrame for better formatting
-            df = results.to_dataframe()
-
+            df = query_job.result().to_dataframe()
+    
+            if return_df:
+                return df  # ✅ Return DataFrame if required
+    
             if df.empty:
                 return "No results found."
-
-            # Return formatted results
+    
+            # Return formatted results as string
             result_str = f"Query returned {len(df)} rows:\n\n"
             result_str += df.to_string(index=False, max_rows=50)
-
-            # Add summary statistics for numeric columns
+    
+            # Add summary stats if any numeric columns exist
             numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
             if len(numeric_cols) > 0:
                 result_str += "\n\nSummary Statistics:\n"
                 for col in numeric_cols:
                     result_str += f"{col}: min={df[col].min()}, max={df[col].max()}, avg={df[col].mean():.2f}\n"
-
+    
             return result_str
-
+    
         except Exception as e:
             return f"Error executing query: {str(e)}\nSQL attempted: {sql}"
+
 
 
 class BigQueryAgent:
@@ -174,9 +210,11 @@ class BigQueryAgent:
                 #return self.agent.run(enhanced_question)
                 response = self.agent.run(enhanced_question)
 
-                # Attempt to parse output if it's SQL with tabular results
-                if isinstance(response, str) and response.strip().lower().startswith("select"):
-                    return self.bq.run(response)
+               
+               # Check if the agent returned a SQL query string
+                if response.strip().lower().startswith("select"):
+                    df = self.bq.run(response)
+                    return df  # Return actual query result
                 return response
                 
             except Exception as e:
