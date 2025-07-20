@@ -1,5 +1,6 @@
 import os
 import json
+import pandas as pd
 
 from typing import Optional, Union
 from langchain.agents import Tool, AgentType, initialize_agent
