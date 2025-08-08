@@ -9,7 +9,7 @@ import sys
 # Ensure the current directory (where llm_integration.py is) is in Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from llm_integration import BigQueryAgent
+from llm_integration_4 import BigQueryAgent
 
 
 from google.cloud import bigquery
@@ -40,12 +40,6 @@ question = st.text_input("🔍 Ask a question about traffic data:")
 if st.button("Ask Question") and question:
     with st.spinner("Thinking..."):
         response = agent.ask(question)
+        st.markdown("### ✅ Response")
+        st.text(response)
 
-         # If response is a DataFrame, show it
-        if isinstance(response, pd.DataFrame):
-            st.markdown("### ✅ Query Result")
-            st.dataframe(response)
-        else:
-            st.markdown("### ✅ Response")
-            st.text(response)
-       
